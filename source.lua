@@ -1322,7 +1322,7 @@ function SexTalityLib:CreateWindow(Settings)
 
     -- Return the actual Window table (rest of original Rayfield logic starts here)
     -- [Rest of original Rayfield window creation code...]
-
+end
 function SexTalityLib:CreateWindow(Settings)
 	if SexTality:FindFirstChild('Loading') then
 		if getgenv and not getgenv().SexTalityCached then
