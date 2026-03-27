@@ -1269,79 +1269,118 @@ function SexTalityLib:CreateWindow(Settings)
             end)
     end
 
-    --- 🔴 FLOATING USER SESSION BOX (FATALITY STYLE) 🔴 ---
-    local FloatingBox = Instance.new("Frame")
-    local UICorner = Instance.new("UICorner")
-    local UIStroke = Instance.new("UIStroke")
-    local BoxTitle = Instance.new("TextLabel")
-    local UserInfo = Instance.new("TextLabel")
-
-    FloatingBox.Name = "UserSessionBox"
-    FloatingBox.Parent = SexTality -- Attaches to the main ScreenGui
-    FloatingBox.BackgroundColor3 = Color3.fromRGB(14, 10, 24) -- Dark Purple/Black
-    FloatingBox.BorderSizePixel = 0
-    -- Positioned to the right of the main Rayfield window
-    FloatingBox.Position = UDim2.new(0.5, 270, 0.5, -100) 
-    FloatingBox.Size = UDim2.new(0, 180, 0, 90)
-    FloatingBox.ZIndex = 5
-
-    UICorner.CornerRadius = UDim.new(0, 4) -- Sharp-ish corners for Fatality look
-    UICorner.Parent = FloatingBox
-
-    UIStroke.Color = Color3.fromRGB(255, 31, 51) -- Fatality Red
-    UIStroke.Thickness = 1.2
-    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke.Parent = FloatingBox
-
-    -- "USER SESSION" Header
-    BoxTitle.Name = "Header"
-    BoxTitle.Parent = FloatingBox
-    BoxTitle.BackgroundTransparency = 1
-    BoxTitle.Position = UDim2.new(0, 10, 0, 5)
-    BoxTitle.Size = UDim2.new(0, 160, 0, 20)
-    BoxTitle.Font = Enum.Font.Ubuntu
-    BoxTitle.Text = "USER SESSION"
-    BoxTitle.TextColor3 = Color3.fromRGB(255, 31, 51)
-    BoxTitle.TextSize = 13
-    BoxTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-    -- Welcome Message
-    UserInfo.Name = "Info"
-    UserInfo.Parent = FloatingBox
-    UserInfo.BackgroundTransparency = 1
-    UserInfo.Position = UDim2.new(0, 10, 0, 30)
-    UserInfo.Size = UDim2.new(0, 160, 0, 50)
-    UserInfo.Font = Enum.Font.Ubuntu
-    -- Note: You can pass a real username here if needed
-    UserInfo.Text = "Welcome, NyRae\nExpires: Lifetime\nStatus: Active"
-    UserInfo.TextColor3 = Color3.fromRGB(206, 191, 209)
-    UserInfo.TextSize = 12
-    UserInfo.TextXAlignment = Enum.TextXAlignment.Left
-    UserInfo.TextYAlignment = Enum.TextYAlignment.Top
-    UserInfo.LineHeight = 1.4
-
-    -- Return the actual Window table (rest of original Rayfield logic starts here)
-    -- [Rest of original Rayfield window creation code...]
-end
-function SexTalityLib:CreateWindow(Settings)
-	if SexTality:FindFirstChild('Loading') then
-		if getgenv and not getgenv().SexTalityCached then
-			SexTality.Enabled = true
-			SexTality.Loading.Visible = true
-
-			task.wait(1.4)
-			SexTality.Loading.Visible = false
+	function SexTalityLib:CreateWindow(Settings)
+		-- 1. Loading Logic
+		if SexTality:FindFirstChild('Loading') then
+			if getgenv and not getgenv().SexTalityCached then
+				SexTality.Enabled = true
+				SexTality.Loading.Visible = true
+				task.wait(1.4)
+				SexTality.Loading.Visible = false
+			end
 		end
-	end
-
-	if getgenv then getgenv().SexTalityCached = true end
-
-	if not correctBuild and not Settings.DisableBuildWarnings then
-		task.delay(3, 
-			function() 
-				SexTalityLib:Notify({Title = 'Build Mismatch', Content = 'SexTality may encounter issues as you are running an incompatible interface version ('.. ((SexTality:FindFirstChild('Build') and SexTality.Build.Value) or 'No Build') ..').\n\nThis version of SexTality is intended for interface build '..InterfaceBuild..'.\n\nTry rejoining and then run the script twice.', Image = 4335487866, Duration = 15})		
+	
+		if getgenv then getgenv().SexTalityCached = true end
+	
+		-- 2. Build Warning Logic
+		if not correctBuild and not Settings.DisableBuildWarnings then
+			task.delay(3, function() 
+				SexTalityLib:Notify({Title = 'Build Mismatch', Content = 'SexTality version mismatch.', Image = 4335487866, Duration = 15})     
 			end)
+		end
+	
+		-- 3. The Window Table (This is what your bootstrapper interacts with)
+		local Window = {
+			Tabs = {},
+			Elements = {},
+			Config = Settings
+		}
+	
+		-- 🔴 THE FLOATING BOX METHOD (Fixes your "Missing Method" error)
+		function Window:CreateFloatingSection(Name)
+			local FloatingBox = Instance.new("Frame")
+			local UICorner = Instance.new("UICorner")
+			local UIStroke = Instance.new("UIStroke")
+			local BoxTitle = Instance.new("TextLabel")
+			local UserInfo = Instance.new("TextLabel")
+			local CloseBtn = Instance.new("TextButton")
+	
+			FloatingBox.Name = "UserSessionBox"
+			FloatingBox.Parent = SexTality 
+			FloatingBox.BackgroundColor3 = Color3.fromRGB(14, 10, 24)
+			FloatingBox.Position = UDim2.new(0.5, 270, 0.5, -100) 
+			FloatingBox.Size = UDim2.new(0, 180, 0, 90)
+			FloatingBox.ZIndex = 10
+	
+			UICorner.CornerRadius = UDim.new(0, 4)
+			UICorner.Parent = FloatingBox
+	
+			UIStroke.Color = Color3.fromRGB(255, 31, 51)
+			UIStroke.Thickness = 1.2
+			UIStroke.Parent = FloatingBox
+	
+			-- Header
+			BoxTitle.Parent = FloatingBox
+			BoxTitle.BackgroundTransparency = 1
+			BoxTitle.Position = UDim2.new(0, 10, 0, 5)
+			BoxTitle.Size = UDim2.new(0, 140, 0, 20)
+			BoxTitle.Font = Enum.Font.Ubuntu
+			BoxTitle.Text = Name or "USER SESSION"
+			BoxTitle.TextColor3 = Color3.fromRGB(255, 31, 51)
+			BoxTitle.TextSize = 13
+			BoxTitle.TextXAlignment = Enum.TextXAlignment.Left
+	
+			-- Close Button (The "X")
+			CloseBtn.Parent = FloatingBox
+			CloseBtn.BackgroundTransparency = 1
+			CloseBtn.Position = UDim2.new(1, -25, 0, 2)
+			CloseBtn.Size = UDim2.new(0, 20, 0, 20)
+			CloseBtn.Font = Enum.Font.GothamBold
+			CloseBtn.Text = "✕"
+			CloseBtn.TextColor3 = Color3.fromRGB(255, 31, 51)
+			CloseBtn.TextSize = 14
+			
+			CloseBtn.MouseButton1Click:Connect(function()
+				FloatingBox.Visible = false
+			end)
+	
+			-- Info Text
+			UserInfo.Parent = FloatingBox
+			UserInfo.BackgroundTransparency = 1
+			UserInfo.Position = UDim2.new(0, 10, 0, 30)
+			UserInfo.Size = UDim2.new(1, -20, 0, 50)
+			UserInfo.Font = Enum.Font.Ubuntu
+			UserInfo.Text = "Welcome, NyRae\nExpires: Lifetime\nStatus: Active"
+			UserInfo.TextColor3 = Color3.fromRGB(206, 191, 209)
+			UserInfo.TextSize = 12
+			UserInfo.TextXAlignment = Enum.TextXAlignment.Left
+			UserInfo.TextYAlignment = Enum.TextYAlignment.Top
+	
+			return FloatingBox
+		end
+	
+		-- [Include the rest of the original Rayfield Window logic below this line...]
+		function SexTalityLib:CreateWindow(Settings)
+			if SexTality:FindFirstChild('Loading') then
+				if getgenv and not getgenv().SexTalityCached then
+					SexTality.Enabled = true
+					SexTality.Loading.Visible = true
+		
+					task.wait(1.4)
+					SexTality.Loading.Visible = false
+				end
+			end
+			if getgenv then getgenv().SexTalityCached = true end
+
+			if not correctBuild and not Settings.DisableBuildWarnings then
+				task.delay(3, 
+					function() 
+						SexTalityLib:Notify({Title = 'Build Mismatch', Content = 'SexTality may encounter issues as you are running an incompatible interface version ('.. ((SexTality:FindFirstChild('Build') and SexTality.Build.Value) or 'No Build') ..').\n\nThis version of SexTality is intended for interface build '..InterfaceBuild..'.\n\nTry rejoining and then run the script twice.', Image = 4335487866, Duration = 15})		
+					end)
+			end
+		-- return Window
 	end
+
 
 	if Settings.ToggleUIKeybind then -- Can either be a string or an Enum.KeyCode
 		local keybind = Settings.ToggleUIKeybind
