@@ -317,7 +317,7 @@ local SexTalityLib = {
             SliderProgress = Color3.fromRGB(255, 31, 51),
             SliderStroke = Color3.fromRGB(31, 31, 56),
             ToggleBackground = Color3.fromRGB(13, 13, 29),
-            ToggleEnabled = Color3.fromRGB(224, 36, 60),
+            ToggleEnabled = Color3.fromRGB(255, 31, 51),
             ToggleDisabled = Color3.fromRGB(68, 68, 85),
             ToggleEnabledStroke = Color3.fromRGB(255, 31, 51),
             ToggleDisabledStroke = Color3.fromRGB(31, 31, 56),
@@ -3671,4 +3671,3 @@ task.delay(4, function()
 end)
 
 return SexTalityLib
-
