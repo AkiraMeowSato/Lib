@@ -1247,14 +1247,33 @@ local function createSettings(window)
 end
 
 function SexTalityLib:CreateWindow(Settings)
-    -- 1. Initialize the Window Table first
+    -- 1. Loading Screen Logic
+    if SexTality:FindFirstChild('Loading') then
+        if getgenv and not getgenv().SexTalityCached then
+            SexTality.Enabled = true
+            SexTality.Loading.Visible = true
+            task.wait(1.4)
+            SexTality.Loading.Visible = false
+        end
+    end
+
+    if getgenv then getgenv().SexTalityCached = true end
+
+    -- 2. Build Warning Logic
+    if not correctBuild and not Settings.DisableBuildWarnings then
+        task.delay(3, function() 
+            SexTalityLib:Notify({Title = 'Build Mismatch', Content = 'SexTality mismatch.', Image = 4335487866, Duration = 15})     
+        end)
+    end
+
+    -- 3. INITIALIZE THE WINDOW TABLE (CRITICAL)
     local Window = {
         Tabs = {},
         Elements = {},
-        Config = Settings
+        Settings = Settings
     }
 
-    -- 2. Define the Floating Box Method ATTACHED to the Window
+    -- 4. ATTACH THE FLOATING BOX METHOD TO THE WINDOW
     function Window:CreateFloatingSection(Name)
         local FloatingBox = Instance.new("Frame")
         local UICorner = Instance.new("UICorner")
@@ -1263,35 +1282,34 @@ function SexTalityLib:CreateWindow(Settings)
         local UserInfo = Instance.new("TextLabel")
         local CloseBtn = Instance.new("TextButton")
 
-        -- Positioning & Style
         FloatingBox.Name = "UserSessionBox"
-        FloatingBox.Parent = game:GetService("CoreGui"):FindFirstChild("SexTality") or game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("SexTality")
+        -- Reparents to the ScreenGui so it's outside the main menu
+        FloatingBox.Parent = SexTality 
         FloatingBox.BackgroundColor3 = Color3.fromRGB(14, 10, 24)
-        FloatingBox.Position = UDim2.new(0.5, 270, 0.5, -100) 
-        FloatingBox.Size = UDim2.new(0, 180, 0, 100)
+        FloatingBox.Position = UDim2.new(0.5, 275, 0.5, -100) 
+        FloatingBox.Size = UDim2.new(0, 190, 0, 100)
         FloatingBox.ZIndex = 100
         FloatingBox.Active = true
-        FloatingBox.Draggable = true -- Standard Roblox dragging
+        FloatingBox.Draggable = true 
 
         UICorner.CornerRadius = UDim.new(0, 4)
         UICorner.Parent = FloatingBox
 
-        UIStroke.Color = Color3.fromRGB(255, 31, 51)
-        UIStroke.Thickness = 1.2
+        UIStroke.Color = Color3.fromRGB(255, 31, 51) -- Fatality Red Accent
+        UIStroke.Thickness = 1.5
         UIStroke.Parent = FloatingBox
 
-        -- Header
         BoxTitle.Parent = FloatingBox
         BoxTitle.BackgroundTransparency = 1
         BoxTitle.Position = UDim2.new(0, 10, 0, 5)
-        BoxTitle.Size = UDim2.new(0, 140, 0, 20)
+        BoxTitle.Size = UDim2.new(0, 150, 0, 20)
         BoxTitle.Font = Enum.Font.Ubuntu
         BoxTitle.Text = Name or "USER SESSION"
         BoxTitle.TextColor3 = Color3.fromRGB(255, 31, 51)
         BoxTitle.TextSize = 13
         BoxTitle.TextXAlignment = Enum.TextXAlignment.Left
 
-        -- Close Button (The "X")
+        -- Close Button (Red X)
         CloseBtn.Parent = FloatingBox
         CloseBtn.BackgroundTransparency = 1
         CloseBtn.Position = UDim2.new(1, -25, 0, 2)
@@ -1300,47 +1318,26 @@ function SexTalityLib:CreateWindow(Settings)
         CloseBtn.Text = "✕"
         CloseBtn.TextColor3 = Color3.fromRGB(255, 31, 51)
         CloseBtn.TextSize = 14
-        
-        CloseBtn.MouseButton1Click:Connect(function()
-            FloatingBox:Destroy() -- Removes it from the screen
-        end)
+        CloseBtn.MouseButton1Click:Connect(function() FloatingBox:Destroy() end)
 
-        -- Session Info Labels
         UserInfo.Parent = FloatingBox
         UserInfo.BackgroundTransparency = 1
         UserInfo.Position = UDim2.new(0, 10, 0, 35)
         UserInfo.Size = UDim2.new(1, -20, 0, 60)
         UserInfo.Font = Enum.Font.Ubuntu
-        UserInfo.Text = "Welcome, NyRae\nExpires: Lifetime\nStatus: Active\nVersion: 1.0.0"
+        UserInfo.Text = "Welcome, NyRae\nExpires: Lifetime\nStatus: Active"
         UserInfo.TextColor3 = Color3.fromRGB(206, 191, 209)
         UserInfo.TextSize = 12
         UserInfo.TextXAlignment = Enum.TextXAlignment.Left
         UserInfo.TextYAlignment = Enum.TextYAlignment.Top
-        UserInfo.LineHeight = 1.2
 
         return FloatingBox
     end
-	function SexTalityLib:CreateWindow(Settings)
-		if SexTality:FindFirstChild('Loading') then
-			if getgenv and not getgenv().SexTalityCached then
-				SexTality.Enabled = true
-				SexTality.Loading.Visible = true
-	
-				task.wait(1.4)
-				SexTality.Loading.Visible = false
-			end
-		end
-	
-		if getgenv then getgenv().SexTalityCached = true end
-	
-		if not correctBuild and not Settings.DisableBuildWarnings then
-			task.delay(3, 
-				function() 
-					SexTalityLib:Notify({Title = 'Build Mismatch', Content = 'SexTality may encounter issues as you are running an incompatible interface version ('.. ((SexTality:FindFirstChild('Build') and SexTality.Build.Value) or 'No Build') ..').\n\nThis version of SexTality is intended for interface build '..InterfaceBuild..'.\n\nTry rejoining and then run the script twice.', Image = 4335487866, Duration = 15})		
-				end)
-		end
-    local Window = {}
-    
+
+    -- 5. RETURN THE WINDOW OBJECT
+    -- (Ensure the rest of your original Rayfield Tab/Window logic is above this return)
+    return Window
+end
 
 	if Settings.ToggleUIKeybind then -- Can either be a string or an Enum.KeyCode
 		local keybind = Settings.ToggleUIKeybind
@@ -1436,7 +1433,7 @@ function SexTalityLib:CreateWindow(Settings)
 				task.wait(math.random(180, 600))
 				SexTalityLib:Notify({
 					Title = "SexTality Interface",
-					Content = "Thank you for using SexTality! <3",
+					Content = "Thank you for using SexTality!",
 					Duration = 7,
 					Image = 4370033185,
 				})
@@ -1722,12 +1719,6 @@ function SexTalityLib:CreateWindow(Settings)
 	if Settings.KeySystem then
 		repeat task.wait() until Passthrough
 	end
-
-
-    return Window
-end
-
-
 
 	Notifications.Template.Visible = false
 	Notifications.Visible = true
