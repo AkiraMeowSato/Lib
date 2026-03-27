@@ -1247,58 +1247,24 @@ local function createSettings(window)
 end
 
 function SexTalityLib:CreateWindow(Settings)
-    -- ... (Loading / Build logic is already in your file)
+	if SexTality:FindFirstChild('Loading') then
+		if getgenv and not getgenv().SexTalityCached then
+			SexTality.Enabled = true
+			SexTality.Loading.Visible = true
 
-    local Window = {
-        Tabs = {},
-        Elements = {},
-        Settings = Settings
-    }
+			task.wait(1.4)
+			SexTality.Loading.Visible = false
+		end
+	end
 
-    -- 🔴 ADDED THIS METHOD TO FIX YOUR ERROR
-    function Window:CreateFloatingSection(Name)
-        local FloatingBox = Instance.new("Frame")
-        local UICorner = Instance.new("UICorner")
-        local UIStroke = Instance.new("UIStroke")
-        local BoxTitle = Instance.new("TextLabel")
-        local UserInfo = Instance.new("TextLabel")
-        local CloseBtn = Instance.new("TextButton")
+	if getgenv then getgenv().SexTalityCached = true end
 
-        FloatingBox.Name = "UserSessionBox"
-        FloatingBox.Parent = SexTality -- Uses the ScreenGui from your file
-        FloatingBox.BackgroundColor3 = Color3.fromRGB(14, 10, 24)
-        FloatingBox.Position = UDim2.new(0.5, 275, 0.5, -100) 
-        FloatingBox.Size = UDim2.new(0, 190, 0, 100)
-        FloatingBox.ZIndex = 100
-        FloatingBox.Active = true
-        FloatingBox.Draggable = true 
-
-        UICorner.CornerRadius = UDim.new(0, 4)
-        UICorner.Parent = FloatingBox
-
-        UIStroke.Color = Color3.fromRGB(255, 31, 51)
-        UIStroke.Thickness = 1.5
-        UIStroke.Parent = FloatingBox
-
-        -- Header & Close Logic
-        BoxTitle.Parent = FloatingBox
-        BoxTitle.Text = Name or "USER SESSION"
-        BoxTitle.TextColor3 = Color3.fromRGB(255, 31, 51)
-        
-        CloseBtn.Parent = FloatingBox
-        CloseBtn.Text = "✕"
-        CloseBtn.MouseButton1Click:Connect(function() FloatingBox:Destroy() end)
-
-        UserInfo.Parent = FloatingBox
-        UserInfo.Text = "Welcome, NyRae\nExpires: Lifetime\nStatus: Active"
-        UserInfo.TextColor3 = Color3.fromRGB(206, 191, 209)
-
-        return FloatingBox
-    end
-
-    -- I kept all your original Main, Topbar, and Tab logic here
-    return Window
-end
+	if not correctBuild and not Settings.DisableBuildWarnings then
+		task.delay(3, 
+			function() 
+				SexTalityLib:Notify({Title = 'Build Mismatch', Content = 'SexTality may encounter issues as you are running an incompatible interface version ('.. ((SexTality:FindFirstChild('Build') and SexTality.Build.Value) or 'No Build') ..').\n\nThis version of SexTality is intended for interface build '..InterfaceBuild..'.\n\nTry rejoining and then run the script twice.', Image = 4335487866, Duration = 15})		
+			end)
+	end
 
 	if Settings.ToggleUIKeybind then -- Can either be a string or an Enum.KeyCode
 		local keybind = Settings.ToggleUIKeybind
