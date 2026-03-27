@@ -1247,6 +1247,80 @@ local function createSettings(window)
 end
 
 function SexTalityLib:CreateWindow(Settings)
+    -- 1. Initialize the Window Table first
+    local Window = {
+        Tabs = {},
+        Elements = {},
+        Config = Settings
+    }
+
+    -- 2. Define the Floating Box Method ATTACHED to the Window
+    function Window:CreateFloatingSection(Name)
+        local FloatingBox = Instance.new("Frame")
+        local UICorner = Instance.new("UICorner")
+        local UIStroke = Instance.new("UIStroke")
+        local BoxTitle = Instance.new("TextLabel")
+        local UserInfo = Instance.new("TextLabel")
+        local CloseBtn = Instance.new("TextButton")
+
+        -- Positioning & Style
+        FloatingBox.Name = "UserSessionBox"
+        FloatingBox.Parent = game:GetService("CoreGui"):FindFirstChild("SexTality") or game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("SexTality")
+        FloatingBox.BackgroundColor3 = Color3.fromRGB(14, 10, 24)
+        FloatingBox.Position = UDim2.new(0.5, 270, 0.5, -100) 
+        FloatingBox.Size = UDim2.new(0, 180, 0, 100)
+        FloatingBox.ZIndex = 100
+        FloatingBox.Active = true
+        FloatingBox.Draggable = true -- Standard Roblox dragging
+
+        UICorner.CornerRadius = UDim.new(0, 4)
+        UICorner.Parent = FloatingBox
+
+        UIStroke.Color = Color3.fromRGB(255, 31, 51)
+        UIStroke.Thickness = 1.2
+        UIStroke.Parent = FloatingBox
+
+        -- Header
+        BoxTitle.Parent = FloatingBox
+        BoxTitle.BackgroundTransparency = 1
+        BoxTitle.Position = UDim2.new(0, 10, 0, 5)
+        BoxTitle.Size = UDim2.new(0, 140, 0, 20)
+        BoxTitle.Font = Enum.Font.Ubuntu
+        BoxTitle.Text = Name or "USER SESSION"
+        BoxTitle.TextColor3 = Color3.fromRGB(255, 31, 51)
+        BoxTitle.TextSize = 13
+        BoxTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+        -- Close Button (The "X")
+        CloseBtn.Parent = FloatingBox
+        CloseBtn.BackgroundTransparency = 1
+        CloseBtn.Position = UDim2.new(1, -25, 0, 2)
+        CloseBtn.Size = UDim2.new(0, 20, 0, 20)
+        CloseBtn.Font = Enum.Font.GothamBold
+        CloseBtn.Text = "✕"
+        CloseBtn.TextColor3 = Color3.fromRGB(255, 31, 51)
+        CloseBtn.TextSize = 14
+        
+        CloseBtn.MouseButton1Click:Connect(function()
+            FloatingBox:Destroy() -- Removes it from the screen
+        end)
+
+        -- Session Info Labels
+        UserInfo.Parent = FloatingBox
+        UserInfo.BackgroundTransparency = 1
+        UserInfo.Position = UDim2.new(0, 10, 0, 35)
+        UserInfo.Size = UDim2.new(1, -20, 0, 60)
+        UserInfo.Font = Enum.Font.Ubuntu
+        UserInfo.Text = "Welcome, NyRae\nExpires: Lifetime\nStatus: Active\nVersion: 1.0.0"
+        UserInfo.TextColor3 = Color3.fromRGB(206, 191, 209)
+        UserInfo.TextSize = 12
+        UserInfo.TextXAlignment = Enum.TextXAlignment.Left
+        UserInfo.TextYAlignment = Enum.TextYAlignment.Top
+        UserInfo.LineHeight = 1.2
+
+        return FloatingBox
+    end
+	function SexTalityLib:CreateWindow(Settings)
 		if SexTality:FindFirstChild('Loading') then
 			if getgenv and not getgenv().SexTalityCached then
 				SexTality.Enabled = true
@@ -1267,72 +1341,6 @@ function SexTalityLib:CreateWindow(Settings)
 		end
     local Window = {}
     
-    -- THIS IS THE METHOD THAT WAS MISSING
-    function Window:CreateFloatingSection(Name)
-        local FloatingBox = Instance.new("Frame")
-        local UICorner = Instance.new("UICorner")
-        local UIStroke = Instance.new("UIStroke")
-        local BoxTitle = Instance.new("TextLabel")
-        local UserInfo = Instance.new("TextLabel")
-        local CloseBtn = Instance.new("TextButton")
-
-        FloatingBox.Name = "UserSessionBox"
-        -- Ensure 'SexTality' refers to your main ScreenGui variable
-        FloatingBox.Parent = game:GetService("CoreGui"):FindFirstChild("SexTality") or game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("SexTality")
-        
-        FloatingBox.BackgroundColor3 = Color3.fromRGB(14, 10, 24)
-        FloatingBox.Position = UDim2.new(0.5, 270, 0.5, -100) 
-        FloatingBox.Size = UDim2.new(0, 180, 0, 90)
-        FloatingBox.ZIndex = 100
-
-        UICorner.CornerRadius = UDim.new(0, 4)
-        UICorner.Parent = FloatingBox
-
-        UIStroke.Color = Color3.fromRGB(255, 31, 51)
-        UIStroke.Thickness = 1.2
-        UIStroke.Parent = FloatingBox
-
-        -- Header Text
-        BoxTitle.Parent = FloatingBox
-        BoxTitle.BackgroundTransparency = 1
-        BoxTitle.Position = UDim2.new(0, 10, 0, 5)
-        BoxTitle.Size = UDim2.new(0, 140, 0, 20)
-        BoxTitle.Font = Enum.Font.Ubuntu
-        BoxTitle.Text = Name or "USER SESSION"
-        BoxTitle.TextColor3 = Color3.fromRGB(255, 31, 51)
-        BoxTitle.TextSize = 13
-        BoxTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-        -- The Close Button you wanted
-        CloseBtn.Parent = FloatingBox
-        CloseBtn.BackgroundTransparency = 1
-        CloseBtn.Position = UDim2.new(1, -25, 0, 2)
-        CloseBtn.Size = UDim2.new(0, 20, 0, 20)
-        CloseBtn.Font = Enum.Font.GothamBold
-        CloseBtn.Text = "✕"
-        CloseBtn.TextColor3 = Color3.fromRGB(255, 31, 51)
-        CloseBtn.TextSize = 14
-        
-        CloseBtn.MouseButton1Click:Connect(function()
-            FloatingBox.Visible = false
-        end)
-
-        -- Content
-        UserInfo.Parent = FloatingBox
-        UserInfo.BackgroundTransparency = 1
-        UserInfo.Position = UDim2.new(0, 10, 0, 30)
-        UserInfo.Size = UDim2.new(1, -20, 0, 50)
-        UserInfo.Font = Enum.Font.Ubuntu
-        UserInfo.Text = "Welcome, NyRae\nExpires: Lifetime\nStatus: Active"
-        UserInfo.TextColor3 = Color3.fromRGB(206, 191, 209)
-        UserInfo.TextSize = 12
-        UserInfo.TextXAlignment = Enum.TextXAlignment.Left
-        UserInfo.TextYAlignment = Enum.TextYAlignment.Top
-
-        return FloatingBox
-    end
-
-
 
 	if Settings.ToggleUIKeybind then -- Can either be a string or an Enum.KeyCode
 		local keybind = Settings.ToggleUIKeybind
@@ -1714,6 +1722,12 @@ function SexTalityLib:CreateWindow(Settings)
 	if Settings.KeySystem then
 		repeat task.wait() until Passthrough
 	end
+
+
+    return Window
+end
+
+
 
 	Notifications.Template.Visible = false
 	Notifications.Visible = true
