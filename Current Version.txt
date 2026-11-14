@@ -1,1 +1,1 @@
-Public Beta 1.1
+Public Beta 1.2
